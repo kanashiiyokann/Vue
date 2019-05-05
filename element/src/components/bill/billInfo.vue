@@ -30,7 +30,11 @@
         </el-select>
       </el-form-item>
       <el-form-item :label="journal.type" label-width="100px" :key="journal.id">
-        <el-input type="text" v-model="journal.amount" style="width:220px;"></el-input>
+        <el-input type="text"
+                  v-model="journal.amount"
+                  @keydown="amountCheck($event)"
+                  @blur="amountTotal"
+                  style="width:220px;"></el-input>
       </el-form-item>
     </div>
     <el-form-item>
@@ -149,35 +153,36 @@
         });
 
         return ret;
-      }
-      ,
+      },
       print() {
         let data = this.decompressInfo(this.bill.info)
         console.log(JSON.stringify(data));
+      },
+      amountCheck($event) {
+        console.log($event)
+       // journal.amount = journal.amount.toString().replace(/[^0-9-.]/, "");
+      },
+      amountTotal() {
+        let totals = this.bill.info.journals.filter(i => i.type === '合计金额');
+        if (totals.length === 0) {
+          return;
+        }
+        let count = 0;
+        this.bill.info.journals.forEach(i => {
+          if (i.type !== '合计金额') {
+            count += (parseFloat(i.amount) || 0);
+          }
+        });
+
+        count = count || undefined;
+        totals.forEach(i => i.amount = count);
+
       }
     },
     watch: {
       index() {
         let bill = util.clone(this.billList[this.index]);
         bill.info = this.compressInfo(bill.info);
-      },
-      bill() {
-        let total = this.bill.journals.filter(i => i.type === '合计金额')[0];
-        if (total === undefined) {
-          return;
-        }
-        let count=0;
-        this.bill.journals.forEach(i=>{
-          if(i.type!=='合计金额'){
-            count+=(i.amount||0);
-          }
-        });
-
-        if(count===0){
-          total.amount=undefined;
-        }else{
-          total.amount=count;
-        }
       }
 
 
