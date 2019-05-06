@@ -1,6 +1,6 @@
 <template>
+  <div>
   <el-form>
-
     <el-form-item label="票据类型" label-width="100px">
       <el-select v-model="bill.info.id"
                  @change="templateChange"
@@ -27,6 +27,7 @@
                      :label="item.name"
                      :value="item.id">
           </el-option>
+          <el-option value="" @click.native="auxiliaryEditDialog(aux.name)">新增<i class="el-icon-circle-plus-outline" ></i></el-option>
         </el-select>
       </el-form-item>
       <el-form-item :label="journal.type" label-width="100px" :key="journal.id">
@@ -41,14 +42,20 @@
       <el-button @click="print">print</el-button>
     </el-form-item>
   </el-form>
+  <!--辅助核算编辑弹窗-->
+  <el-dialog title="新增辅助核算" :visible.sync="dialog.visible">
+    <auxiliaryEditor :data="dialog.data" :type="dialog.type" ></auxiliaryEditor>
+  </el-dialog>
+  </div>
 </template>
 
 <script>
   import util from '../../modules/util'
   import storage from '../../modules/storage.js'
-
+  import auxiliaryEditor from './auxiliaryEditor'
   export default {
     name: "billInfo",
+    components:{auxiliaryEditor},
     data() {
       return {
         templateList: templateList,
@@ -57,6 +64,7 @@
         bill: billList[0],
         customerList: null,
         applierList: null,
+        dialog:{data:null,type:null,visible:false}
       };
     },
     methods: {
@@ -70,6 +78,7 @@
         }
       },
       auxChange($event, aux) {
+        if($event==="") return;
         let src = aux.name === '客户' ? this.customerList : this.applierList;
         src = src.filter(i => i.id === $event)[0];
         aux.optName = src.name;
@@ -177,6 +186,15 @@
         count = count || undefined;
         totals.forEach(i => i.amount = count);
 
+      },
+      auxiliaryEditDialog(type){
+        this.dialog.type=type;
+        this.dialog.visible=true;
+      if(type==='客户'){
+        this.dialog.data=this.customerList;
+      }else if(type==='供应商'){
+        this.dialog.data=this.applierList;
+      }
       }
     },
     watch: {

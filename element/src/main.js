@@ -2,33 +2,35 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import billInfo from './components/bill/billInfo'
-import test from './components/test'
-import router from './router'
+import auxiliaryEditor from './components/bill/auxiliaryEditor'
 import el from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import storage from './modules/storage.js'
 
 Vue.config.productionTip = false
 Vue.use(el);
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  components: {billInfo,test},
-  template: '<billInfo/>'
-})
 
 let customers = [
-  {id: 1, name: '孙上峰'},
-  {id: 2, name: '孙胜腾'},
-  {id: 3, name: '赵友文'},
+  {id: 1, code: "001", name: '孙上峰'},
+  {id: 2, code: "002", name: '孙胜腾'},
+  {id: 3, code: "003", name: '赵友文'},
 ];
 let appliers = [
-  {id: 1, name: '成都膳轩食品有限公司'},
-  {id: 2, name: '四川芊村道食品有限公司'},
-  {id: 3, name: '顶呱呱食品有限公司'},
+  {id: 1, code: "001",name: '成都膳轩食品有限公司'},
+  {id: 2,code: "002", name: '四川芊村道食品有限公司'},
+  {id: 3,code: "003", name: '顶呱呱食品有限公司'},
 ];
 storage.save("customers", customers);
 storage.save("appliers", appliers);
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  data() {
+    return {auxiliaryList: appliers};
+  },
+  components: {billInfo, auxiliaryEditor},
+  template: '<billInfo/>'
+})
+
 
 
