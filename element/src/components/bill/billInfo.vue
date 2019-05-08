@@ -1,51 +1,55 @@
 <template>
   <div>
-  <el-form>
-    <el-form-item label="票据类型" label-width="100px">
-      <el-select v-model="bill.info.id"
-                 @change="templateChange"
-      >
-        <el-option
-          v-for="template in templateList"
-          :key="template.id"
-          :value="template.id"
-          :label="template.type"
-        ></el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="票据日期" label-width="100px">
-      <el-date-picker v-model="bill.date"></el-date-picker>
-    </el-form-item>
-    <div v-for="journal in bill.info.journals" :key="journal.id">
-      <el-form-item v-for="aux in journal.subject.auxiliaryCategoryList"
-                    v-if="aux.name==='客户'|| aux.name==='供应商'"
-                    :key="aux.id"
-                    :label="aux.name" label-width="100px">
-        <el-select v-model="aux.optId" style="width:220px;" placeholder="请选择" @change="auxChange($event,aux)">
-          <el-option v-for="item in aux.name==='客户'?customerList:applierList"
-                     :key="item.id"
-                     :label="item.name"
-                     :value="item.id">
-          </el-option>
-          <el-option value="" @click.native="auxiliaryEditDialog(aux.name)">新增<i class="el-icon-circle-plus-outline" ></i></el-option>
+    <el-form>
+      <el-form-item label="票据类型" label-width="100px">
+        <el-select v-model="bill.info.id"
+                   @change="templateChange"
+        >
+          <el-option
+            v-for="template in templateList"
+            :key="template.id"
+            :value="template.id"
+            :label="template.type"
+          ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item :label="journal.type" label-width="100px" :key="journal.id">
-        <el-input type="text"
-                  v-model="journal.amount"
-                  @keydown="amountCheck($event)"
-                  @blur="amountTotal"
-                  style="width:220px;"></el-input>
+      <el-form-item label="票据日期" label-width="100px">
+        <el-date-picker v-model="bill.date"></el-date-picker>
       </el-form-item>
-    </div>
-    <el-form-item>
-      <el-button @click="print">print</el-button>
-    </el-form-item>
-  </el-form>
-  <!--辅助核算编辑弹窗-->
-  <el-dialog title="新增辅助核算" :visible.sync="dialog.visible">
-    <auxiliaryEditor :data="dialog.data" :type="dialog.type" ></auxiliaryEditor>
-  </el-dialog>
+      <div v-for="journal in bill.info.journals" :key="journal.id">
+        <el-form-item v-for="aux in journal.subject.auxiliaryCategoryList"
+                      v-if="aux.name==='客户'|| aux.name==='供应商'"
+                      :key="aux.id"
+                      :label="aux.name" label-width="100px">
+          <el-select v-model="aux.optId" style="width:220px;" placeholder="请选择" @change="auxChange($event,aux)"
+                     :key="journal.id">
+            <el-option v-for="item in aux.name==='客户'?customerList:applierList"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
+            </el-option>
+            <el-option value="" @click.native="auxiliaryEditDialog(aux.name)">新增<i
+              class="el-icon-circle-plus-outline"></i></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="journal.type" label-width="100px" >
+          <el-input type="text"
+                    v-model="journal.amount"
+                    @keydown="amountCheck($event)"
+                    @blur="amountTotal"
+                    style="width:220px;"></el-input>
+        </el-form-item>
+      </div>
+      <el-form-item>
+        <p>{{index+1}}/{{billList.length}}</p>
+        <el-button @click="indexChange(-1)">上一个</el-button>
+        <el-button @click="indexChange(1)">下一个</el-button>
+      </el-form-item>
+    </el-form>
+    <!--辅助核算编辑弹窗-->
+    <el-dialog title="新增辅助核算" :visible.sync="dialog.visible">
+      <auxiliaryEditor :data="dialog.data" :type="dialog.type"></auxiliaryEditor>
+    </el-dialog>
   </div>
 </template>
 
@@ -53,9 +57,10 @@
   import util from '../../modules/util'
   import storage from '../../modules/storage.js'
   import auxiliaryEditor from './auxiliaryEditor'
+
   export default {
     name: "billInfo",
-    components:{auxiliaryEditor},
+    components: {auxiliaryEditor},
     data() {
       return {
         templateList: templateList,
@@ -64,7 +69,7 @@
         bill: billList[0],
         customerList: null,
         applierList: null,
-        dialog:{data:null,type:null,visible:false}
+        dialog: {data: null, type: null, visible: false}
       };
     },
     methods: {
@@ -78,7 +83,7 @@
         }
       },
       auxChange($event, aux) {
-        if($event==="") return;
+        if ($event === "") return;
         let src = aux.name === '客户' ? this.customerList : this.applierList;
         src = src.filter(i => i.id === $event)[0];
         aux.optName = src.name;
@@ -144,6 +149,16 @@
         }));
         return info;
       },
+      indexChange(value) {
+
+        let ret = this.index + value;
+        if (ret > -1 && ret < this.billList.length) {
+          let data=util.clone(this.bill);
+          data.info=this.decompressInfo(data.info);
+          this.billList[this.index]=data;
+          this.index = ret;
+        }
+      },
       decompressInfo(info) {
         let ret = util.clone(this.templateList.filter(i => i.id === info.id)[0]);
 
@@ -169,7 +184,7 @@
       },
       amountCheck($event) {
         console.log($event)
-       // journal.amount = journal.amount.toString().replace(/[^0-9-.]/, "");
+        // journal.amount = journal.amount.toString().replace(/[^0-9-.]/, "");
       },
       amountTotal() {
         let totals = this.bill.info.journals.filter(i => i.type === '合计金额');
@@ -187,20 +202,20 @@
         totals.forEach(i => i.amount = count);
 
       },
-      auxiliaryEditDialog(type){
-        this.dialog.type=type;
-        this.dialog.visible=true;
-      if(type==='客户'){
-        this.dialog.data=this.customerList;
-      }else if(type==='供应商'){
-        this.dialog.data=this.applierList;
-      }
+      auxiliaryEditDialog(type) {
+        this.dialog.type = type;
+        this.dialog.visible = true;
+        if (type === '客户') {
+          this.dialog.data = this.customerList;
+        } else if (type === '供应商') {
+          this.dialog.data = this.applierList;
+        }
       }
     },
     watch: {
       index() {
-        let bill = util.clone(this.billList[this.index]);
-        bill.info = this.compressInfo(bill.info);
+         this.bill = util.clone(this.billList[this.index]);
+        this.bill.info = this.compressInfo(this.bill.info);
       }
 
 
