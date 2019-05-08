@@ -154,7 +154,7 @@
         let ret = this.index + value;
         if (ret > -1 && ret < this.billList.length) {
           let data=util.clone(this.bill);
-          data.info=this.decompressInfo(data.info);
+          data.info=this.decompressInfo(data.info);1
           this.billList[this.index]=data;
           this.index = ret;
         }
