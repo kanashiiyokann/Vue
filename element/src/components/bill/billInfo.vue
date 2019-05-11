@@ -22,11 +22,13 @@
                     :key="aux.id"
                     :label="aux.name" label-width="100px">
         <el-select v-model="aux.optId" style="width:220px;" placeholder="请选择" @change="auxChange($event,aux)">
+          <el-tooltip :content="aux.name" effect="light" placement="top">
           <el-option v-for="item in aux.name==='客户'?customerList:applierList"
                      :key="item.id"
                      :label="item.name"
                      :value="item.id">
           </el-option>
+          </el-tooltip>
           <el-option value="" @click.native="auxiliaryEditDialog(aux.name)">新增<i class="el-icon-circle-plus-outline" ></i></el-option>
         </el-select>
       </el-form-item>
