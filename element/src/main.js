@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import billInfo from './components/bill/billInfo'
+import billListPage from './components/bill/billListPage'
 import auxiliaryEditor from './components/bill/auxiliaryEditor'
 import el from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -28,8 +29,8 @@ new Vue({
   data() {
     return {auxiliaryList: appliers};
   },
-  components: {billInfo, auxiliaryEditor},
-  template: '<billInfo/>'
+  components: {billInfo, auxiliaryEditor,billListPage},
+  template: '<billListPage/>'
 })
 
 
