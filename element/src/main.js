@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import billInfo from './components/bill/billInfo'
 import billListPage from './components/bill/billListPage'
-import auxiliaryEditor from './components/bill/auxiliaryEditor'
+import imageViewer from './components/bill/imageViewer'
 import el from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import storage from './modules/storage.js'
@@ -27,10 +27,10 @@ storage.save("appliers", appliers);
 new Vue({
   el: '#app',
   data() {
-    return {auxiliaryList: appliers};
+    return {img:'https://testdggoss1.oss-cn-beijing.aliyuncs.com/86feca9b-cc55-44e9-8381-857559dc75e1.jpg'};
   },
-  components: {billInfo, auxiliaryEditor,billListPage},
-  template: '<billListPage/>'
+  components: {billInfo, imageViewer,billListPage},
+  template: '<billInfo />'
 })
 
 

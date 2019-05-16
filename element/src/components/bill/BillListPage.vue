@@ -15,10 +15,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="票据类型">
-          <el-select v-model="params.type">
+          <el-select v-model="params.templateId">
             <el-option value="" label="全部"></el-option>
-            <el-option v-for="type in templateTypeList" :key="type.id" :value="type.id"
-                       :label="type.type"></el-option>
+            <el-option v-for="template in templateTypeList" :key="template.id" :value="template.id"
+                       :label="template.type"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="记账状态">
@@ -28,7 +28,7 @@
                        :value="accountedState.value" :label="accountedState.text"></el-option>
           </el-select>
         </el-form-item>
-        <el-button type="primary" size="small">查询</el-button>
+        <el-button type="primary" size="small" @click="doSearch">查询</el-button>
         <el-button size="small">清空</el-button>
       </el-form>
     </el-card>
@@ -43,10 +43,9 @@
           <span class="statistics-count">{{statistics.count}}</span>
         </template>
       </el-row>
-      <el-table class="table" :data="billList" :show-overflow-tooltip="true" :border="true"
-                :highlight-current-row="true" header-row-class-name="table-header" size="small">
+      <el-table class="table" :data="billList" :show-overflow-tooltip="true" :border="true" :stripe="true"
+                :highlight-current-row="true" :header-row-style="{color:'black',fontWeight:'bold',fontSize:'14px',backgroundColor:'green'}" size="small">
         <el-table-column align="center" type="selection" width="50"></el-table-column>
-        <!--        <el-table-column align="center"  type="index" :index="autoIndex" label="序号" width="80"></el-table-column>-->
         <el-table-column align="center" prop="no" label="编号">
         </el-table-column>
         <el-table-column align="center" label="票据影像">
@@ -82,19 +81,23 @@
       return samples;
     },
     methods: {
-      autoIndex(index) {
-        return index + 1;
+      doSearch(){
+        console.log(JSON.stringify(this.params));
       }
     },
     mounted() {
+      //初始花票据状态翻译map
       if (this.stateList) {
         this.stateMap = {};
         this.stateList.forEach(state => this.stateMap[state.value] = state.text);
       }
+      //初始化记账状态翻译map
       if (this.accountedStateList) {
         this.accountedStateMap = {};
         this.accountedStateList.forEach(state => this.accountedStateMap[state.value] = state.text);
       }
+      //初始化表头筛选调教
+        this.params={period:'2019年1期',state:1,accounted:1, templateId:''     };
     }
   }
 </script>

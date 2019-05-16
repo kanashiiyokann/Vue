@@ -34,9 +34,8 @@
         </el-form-item>
         <el-form-item :label="journal.type" label-width="100px" :key="journal.id">
           <el-input type="text"
-                    v-model="journal.amount"
-                    @keydown="amountCheck($event)"
-                    @blur="amountTotal"
+                    v-model.trim="journal.amount"
+                    @keyup.native="amountTotal(journal.type)"
                     style="width:220px;"></el-input>
         </el-form-item>
       </div>
@@ -56,6 +55,7 @@
   import storage from '../../modules/storage.js'
   import auxiliaryEditor from './auxiliaryEditor'
 
+   const regex={money:/^-?(?!-0[0-9]+)(?!0[0-9]+)[0-9]+(\.[0-9]{1,4})?$/};
   export default {
     name: "billInfo",
     components: {auxiliaryEditor},
@@ -170,18 +170,15 @@
         let data = this.decompressInfo(this.bill.info)
         console.log(JSON.stringify(data));
       },
-      amountCheck($event) {
-        console.log($event)
-        // journal.amount = journal.amount.toString().replace(/[^0-9-.]/, "");
-      },
-      amountTotal() {
+      amountTotal(type) {
+        if(type==='合计金额') return;
         let totals = this.bill.info.journals.filter(i => i.type === '合计金额');
         if (totals.length === 0) {
           return;
         }
         let count = 0;
         this.bill.info.journals.forEach(i => {
-          if (i.type !== '合计金额') {
+          if (i.type !== '合计金额' &&i.amount!==null&& i.amount.toString().match(regex.money)) {
             count += (parseFloat(i.amount) || 0);
           }
         });
@@ -211,8 +208,10 @@
     mounted: function () {
       this.customerList = storage.get("customers");
       this.applierList = storage.get("appliers");
+
     }
   }
+
 
 
   let templateList = [
