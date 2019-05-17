@@ -22,7 +22,8 @@
                       :key="aux.id"
                       :label="aux.name" label-width="100px">
           <el-select v-model="aux.optId" style="width:220px;" placeholder="请选择" @change="auxChange($event,aux)">
-            <el-tooltip v-for="item in aux.name==='客户'?customerList:applierList" :key="item.id" :content="item.name" effect="light" placement="right">
+            <el-tooltip v-for="item in aux.name==='客户'?customerList:applierList" :key="item.id" :content="item.name"
+                        effect="light" placement="right">
               <el-option
                 :label="item.name"
                 :value="item.id">
@@ -55,7 +56,7 @@
   import storage from '../../modules/storage.js'
   import auxiliaryEditor from './auxiliaryEditor'
 
-   const regex={money:/^-?(?!-0[0-9]+)(?!0[0-9]+)[0-9]+(\.[0-9]{1,4})?$/};
+  const regex = {money: /^-?(?!-0[0-9]+)(?!0[0-9]+)[0-9]+(\.[0-9]{1,4})?$/};
   export default {
     name: "billInfo",
     components: {auxiliaryEditor},
@@ -171,15 +172,15 @@
         console.log(JSON.stringify(data));
       },
       amountTotal(type) {
-        if(type==='合计金额') return;
+        if (type === '合计金额') return;
         let totals = this.bill.info.journals.filter(i => i.type === '合计金额');
         if (totals.length === 0) {
           return;
         }
         let count = 0;
         this.bill.info.journals.forEach(i => {
-          if (i.type !== '合计金额' &&i.amount!==null&& i.amount.toString().match(regex.money)) {
-            count += (parseFloat(i.amount) || 0);
+          if (i.type !== '合计金额' && i.amount !== null && i.amount.toString().match(regex.money)) {
+            count = util.sum(count, parseFloat(i.amount || 0));
           }
         });
 
@@ -211,7 +212,6 @@
 
     }
   }
-
 
 
   let templateList = [

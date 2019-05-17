@@ -1,14 +1,17 @@
 <template>
-  <div v-viewer ref="body" class="body" style="margin: 50px;">
-    <div class="left" ref="left">
-      <div class="container">
-        <div class="mask"></div>
-        <img class="image" :src="data" style="border:1px solid red;">
+  <div>
+    <div v-viewer ref="body" class="body" style="margin: 50px;">
+      <div class="left" ref="left">
+        <div class="container">
+          <div class="mask"></div>
+          <img class="image" :src="data" style="border:1px solid red;">
+        </div>
+      </div>
+      <div class="right" ref="right">
+        <img class="popover" :src="data">
       </div>
     </div>
-    <div class="right" ref="right">
-      <img class="popover" :src="data">
-    </div>
+    fuck you
   </div>
 </template>
 
@@ -32,7 +35,8 @@
     },
     mounted() {
       //初始化大小
-      this.$refs.body.style.width = (this.width * 3 / 2 + this.space) + 'px';
+      this.$refs.body.style.width = this.width + 'px';
+      this.$refs.body.style.marginRight = this.space + 'px';
       this.$refs.body.style.height = this.height + 'px';
       this.$refs.left.style.width = this.width + 'px';
       this.$refs.left.style.marginRight = this.space + 'px';
@@ -44,37 +48,41 @@
         bind(el) {
           //组件元素
           let $body = el;
-          let $container=$(".container");
+          let $container = $(".container");
           let $mask = $('.mask');
           let $right = $('.right');
           let $image = $(".image");
+          let $popover = $('.popover');
+          let scale = 1;
           //鼠标事件
           /**
            *  鼠标按下
            * */
-          $image.addEventListener('mousedown', function (e) {
+          $container.addEventListener('mousedown', function (e) {
             switchControls("none");
-            e.preventDefault();
           });
           /**
            *  鼠标弹起
            * */
-          $image.addEventListener('mouseup', function () {
+          $container.addEventListener('mouseup', function () {
             switchControls("inline-block");
           });
           /**鼠标进入 */
-          $image.addEventListener('mouseenter', function () {
+          $container.addEventListener('mouseenter', function () {
             switchControls('inline-block');
           });
           /**鼠标离开 */
-          $image.addEventListener('mouseleave', function () {
+          $container.addEventListener('mouseleave', function () {
             switchControls('none');
           });
 
           /**鼠标移动 */
-          $image.addEventListener('mousemove', function (e) {
+          $container.addEventListener('mousemove', function (e) {
             e = e || window.event;
-            locateMask();
+            //which等于1表示左键按下
+            if (e.which === 0) {
+              locateMask();
+            }
             e.preventDefault();
           });
 
@@ -96,25 +104,34 @@
           function locateMask() {
             let e = event || window.event;
 
-            if($mask.style.display === 'none'){
+            if ($mask.style.display === 'none') {
               switchControls();
             }
             //判断鼠标是否在image范围内
 
-            //mask跟随鼠标移动
+
             if ($mask.style.display !== 'none') {
+              //mask跟随鼠标移动
               let left, top;
               top = e.clientY - $body.getBoundingClientRect().top - $mask.clientHeight / 2;
               top = top < 0 ? 0 : top;
-              top=top>$image.clientHeight-$mask.clientHeight?$image.clientHeight-$mask.clientHeight:top;
+              top = top > $image.clientHeight - $mask.clientHeight ? $image.clientHeight - $mask.clientHeight : top;
               left = e.clientX - $body.getBoundingClientRect().left - $mask.clientWidth / 2;
-              left=left>$image.clientWidth-$mask.clientWidth?$image.clientWidth-$mask.clientWidth:left;
+              left = left > $image.clientWidth - $mask.clientWidth ? $image.clientWidth - $mask.clientWidth : left;
               left = left < 0 ? 0 : left;
 
 
               $mask.style.left = left + 'px';
               $mask.style.top = top + 'px';
+              //右边图片随鼠标移动边距变化
+
+              left = (e.clientX - $image.getBoundingClientRect().left - $image.clientWidth / 2) * scale ;
+              top = (e.clientY - $image.getBoundingClientRect().top - $image.clientHeight/2) * scale ;
+
+              $popover.style.top = ( top*-1) + 'px';
+              $popover.style.left = (left*-1-$right.clientWidth) + 'px';
             }
+
           }
 
           /**
@@ -162,6 +179,7 @@
   .mask {
     width: 100px;
     height: 100px;
+    display: none;
     position: absolute;
     cursor: move;
     top: 0;
