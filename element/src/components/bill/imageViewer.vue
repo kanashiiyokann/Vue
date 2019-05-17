@@ -125,11 +125,11 @@
               $mask.style.top = top + 'px';
               //右边图片随鼠标移动边距变化
 
-              left = (e.clientX - $image.getBoundingClientRect().left - $image.clientWidth / 2) * scale ;
-              top = (e.clientY - $image.getBoundingClientRect().top - $image.clientHeight/2) * scale ;
+              left = ($popover.scrollWidth-$right.clientWidth)*(e.clientX - $image.getBoundingClientRect().left)/$image.clientWidth  ;
+              top = ($popover.scrollHeight-$right.clientHeight)*(e.clientY - $image.getBoundingClientRect().top) /$image.clientHeight ;
 
               $popover.style.top = ( top*-1) + 'px';
-              $popover.style.left = (left*-1-$right.clientWidth) + 'px';
+              $popover.style.left = (left*-1) + 'px';
             }
 
           }
