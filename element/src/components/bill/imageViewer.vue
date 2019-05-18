@@ -2,9 +2,9 @@
   <div>
     <div v-viewer ref="body" class="body" style="margin: 50px;">
       <div class="left">
-        <div class="container">
+        <div class="container" style="border: 1px solid red">
           <div class="mask"></div>
-          <img class="image" :src="data" style="border:1px solid red;">
+          <img :src="data" class="image">
         </div>
       </div>
       <div class="right">
@@ -34,7 +34,6 @@
       };
     },
     mounted() {
-      debugger
       //初始化大小
       let $body = this.$refs.body;
       let $left = $body.getElementsByClassName("left")[0];
@@ -50,6 +49,11 @@
       $right.style.left = (this.width + this.space) + 'px';
       $popover.style.width=$image.scrollWidth*this.scale+'px';
       $popover.style.height=$image.scrollHeight*this.scale+'px';
+      //初始图片容器中居中
+      let margin = ($left.clientWidth - $image.clientWidth) / 2;
+      if (margin > 0) {
+        $left.getElementsByClassName('container')[0].style.marginLeft = margin + 'px';
+      }
     },
     directives: {
       viewer: {
@@ -119,16 +123,18 @@
 
             if ($mask.style.display !== 'none') {
               //mask跟随鼠标移动
-              let left, top;
+              let left, top, amend;
+              //容器margin 修正值
+              amend = parseFloat($container.style.marginLeft) || 0;
               top = e.clientY - $body.getBoundingClientRect().top - $mask.clientHeight / 2;
               top = top < 0 ? 0 : top;
               top = top > $image.clientHeight - $mask.clientHeight ? $image.clientHeight - $mask.clientHeight : top;
               left = e.clientX - $body.getBoundingClientRect().left - $mask.clientWidth / 2;
-              left = left > $image.clientWidth - $mask.clientWidth ? $image.clientWidth - $mask.clientWidth : left;
+              left = left > $image.clientWidth - $mask.clientWidth + amend ? $image.clientWidth - $mask.clientWidth + amend : left;
               left = left < 0 ? 0 : left;
 
 
-              $mask.style.left = left + 'px';
+              $mask.style.left = left - amend + 'px';
               $mask.style.top = top + 'px';
               //右边图片随鼠标移动边距变化
               left = e.clientX - $image.getBoundingClientRect().left;
@@ -190,6 +196,7 @@
     background: #ffffff;
     position: absolute;
     top: 0;
+    display: none;
     overflow: hidden;
     z-index: 9999;
   }
@@ -206,30 +213,28 @@
     z-index: 1000;
   }
 
-  .body .image {
+  .image {
     display: block;
     height: 100%;
-
   }
 
 
-  .body .right .popover {
+  .popover {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
   }
-
   .container {
     height: 100%;
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     z-index: 100;
     overflow: hidden;
   }
 
-  .body img {
+  .unused {
     transform-origin: center center;
     -ms-transform-origin: center center; /* IE 9 */
     -webkit-transform-origin: center center; /* Safari 和 Chrome */
