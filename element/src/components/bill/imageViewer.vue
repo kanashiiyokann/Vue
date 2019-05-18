@@ -1,13 +1,13 @@
 <template>
   <div>
     <div v-viewer ref="body" class="body" style="margin: 50px;">
-      <div class="left" ref="left">
+      <div class="left">
         <div class="container">
           <div class="mask"></div>
           <img class="image" :src="data" style="border:1px solid red;">
         </div>
       </div>
-      <div class="right" ref="right">
+      <div class="right">
         <img class="popover" :src="data">
       </div>
     </div>
@@ -34,14 +34,22 @@
       };
     },
     mounted() {
+      debugger
       //初始化大小
-      this.$refs.body.style.width = this.width + 'px';
-      this.$refs.body.style.marginRight = this.space + 'px';
-      this.$refs.body.style.height = this.height + 'px';
-      this.$refs.left.style.width = this.width + 'px';
-      this.$refs.left.style.marginRight = this.space + 'px';
-      this.$refs.right.style.width = this.width / 2 + 'px';
-      this.$refs.right.style.left = (this.width + this.space) + 'px';
+      let $body = this.$refs.body;
+      let $left = $body.getElementsByClassName("left")[0];
+      let $right = $body.getElementsByClassName("right")[0];
+      let $image = $left.getElementsByClassName("image")[0];
+      let $popover = $right.getElementsByClassName("popover")[0];
+      $body.style.width = this.width + 'px';
+      $body.style.marginRight = this.space + 'px';
+      $body.style.height = this.height + 'px';
+      $left.style.width = this.width + 'px';
+      $left.style.marginRight = this.space + 'px';
+      $right.style.width = this.width / 2 + 'px';
+      $right.style.left = (this.width + this.space) + 'px';
+      $popover.style.width=$image.scrollWidth*this.scale+'px';
+      $popover.style.height=$image.scrollHeight*this.scale+'px';
     },
     directives: {
       viewer: {
@@ -53,7 +61,6 @@
           let $right = $('.right');
           let $image = $(".image");
           let $popover = $('.popover');
-          let scale = 1;
           //鼠标事件
           /**
            *  鼠标按下
@@ -124,12 +131,23 @@
               $mask.style.left = left + 'px';
               $mask.style.top = top + 'px';
               //右边图片随鼠标移动边距变化
+              left = e.clientX - $image.getBoundingClientRect().left;
+              if (left < $mask.clientWidth / 2) {
+                left = 0;
+              } else if (left > ($image.clientWidth - $mask.clientWidth / 2)) {
+                left = $image.clientWidth - $mask.clientWidth / 2;
+              }
+              left = ($popover.scrollWidth - $right.clientWidth) * left / ($image.clientWidth - $mask.clientWidth);
+              top = e.clientY - $image.getBoundingClientRect().top;
+              if (top < $mask.clientHeight / 2) {
+                top = 0;
+              } else if (top > ($image.clientHeight - $mask.clientHeight / 2)) {
+                top = $image.clientHeight - $mask.clientHeight / 2;
+              }
+              top = ($popover.scrollHeight - $right.clientHeight) * top / ($image.clientHeight - $mask.clientHeight);
 
-              left = ($popover.scrollWidth-$right.clientWidth)*(e.clientX - $image.getBoundingClientRect().left)/$image.clientWidth  ;
-              top = ($popover.scrollHeight-$right.clientHeight)*(e.clientY - $image.getBoundingClientRect().top) /$image.clientHeight ;
-
-              $popover.style.top = ( top*-1) + 'px';
-              $popover.style.left = (left*-1) + 'px';
+              $popover.style.top = (top * -1) + 'px';
+              $popover.style.left = (left * -1) + 'px';
             }
 
           }

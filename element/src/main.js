@@ -30,7 +30,7 @@ new Vue({
     return {img:'https://testdggoss1.oss-cn-beijing.aliyuncs.com/86feca9b-cc55-44e9-8381-857559dc75e1.jpg'};
   },
   components: {billInfo, imageViewer,billListPage},
-  template: '<imageViewer :data="img" />'
+  template: '<imageViewer :data="img" :scale="1.5"/>'
 })
 
 
