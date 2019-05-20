@@ -35,7 +35,7 @@
     <el-card ref="body" class="card">
       <el-row style="margin-bottom: 12px;">
         <el-button type="small">汇总生产凭证</el-button>
-        <el-button type="small">退回</el-button>
+        <el-button type="small" @click="returnBill">退回</el-button>
         <el-button type="small">跨期</el-button>
         <el-button type="small">删除</el-button>
         <template v-for="statistics in billStatistics">
@@ -44,15 +44,18 @@
         </template>
       </el-row>
       <el-table class="table" :data="billList" :show-overflow-tooltip="true" :border="true" :stripe="true"
-                :highlight-current-row="true" :header-row-style="{color:'black',fontWeight:'bold',fontSize:'14px',backgroundColor:'green'}" size="small">
+                @selection-change="selectChange"
+                :highlight-current-row="true"
+                :header-row-style="{color:'black',fontWeight:'bold',fontSize:'14px',backgroundColor:'green'}"
+                size="small">
         <el-table-column align="center" type="selection" width="50"></el-table-column>
         <el-table-column align="center" prop="no" label="编号">
         </el-table-column>
         <el-table-column align="center" label="票据影像">
           <template slot-scope="scope">
-            <el-popover placement="right" :open-delay="400" trigger="hover" style="overflow: hidden;" >
+            <el-popover placement="right" :open-delay="400" trigger="hover" style="overflow: hidden;">
               <img :src="scope.row.imageUrl" class="img-popover">
-              <div slot="reference" >
+              <div slot="reference">
                 <img :src="scope.row.imageUrl" class="img-cell">
               </div>
             </el-popover>
@@ -81,8 +84,14 @@
       return samples;
     },
     methods: {
-      doSearch(){
+      doSearch() {
         console.log(JSON.stringify(this.params));
+      }
+      , returnBill() {
+        console.log(JSON.stringify(this.selectedBillList));
+      },
+      selectChange(data) {
+        this.selectedBillList = data;
       }
     },
     mounted() {
@@ -97,7 +106,7 @@
         this.accountedStateList.forEach(state => this.accountedStateMap[state.value] = state.text);
       }
       //初始化表头筛选调教
-        this.params={period:'2019年1期',state:1,accounted:1, templateId:''     };
+      this.params = {period: '2019年1期', state: 1, accounted: 1, templateId: ''};
     }
   }
 </script>
@@ -129,6 +138,7 @@
     padding: 3px;
     margin-bottom: 10px;
   }
+
   .img-popover {
     width: 800px;
     max-height: 400px;
