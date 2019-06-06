@@ -22,7 +22,7 @@
                       :key="aux.id"
                       :label="aux.name" label-width="100px">
           <el-select v-model="aux.optId" style="width:220px;" placeholder="请选择" @change="auxChange($event,aux)">
-            <el-tooltip v-for="item in aux.name==='客户'?customerList:applierList" :key="item.id" :content="item.name"
+            <el-tooltip v-for="item in aux.name==='客户'?customerList:applierList" :key="item.id" :disabled="whetherDisable(item.name)" :content="item.name"
                         effect="light" placement="right">
               <el-option
                 :label="item.name"
@@ -196,6 +196,9 @@
         } else if (type === '供应商') {
           this.dialog.data = this.applierList;
         }
+      },
+      whetherDisable(name){
+        return name.length<18;
       }
     },
     watch: {

@@ -34,7 +34,7 @@ new Vue({
     };
   },
   components: {billInfo, imageViewer2, billListPage, structure},
-  template: '<imageViewer2 :data="img1" />'
+  template: '<billInfo />'
 })
 
 
