@@ -7,7 +7,9 @@ function Cacher() {
     let param = options.data || null;
     if (param !== null) {
       for (let key in param) {
-        target += ("&" + key + "=" + param[key]);
+        if (param.hasOwnProperty(key)) {
+          target += ("&" + key + "=" + param[key]);
+        }
       }
       target = '?' + target.substring(1);
     }
@@ -24,59 +26,64 @@ function Cacher() {
         let ret = resolve(res);
         if (ret !== false) sessionStorage.setItem(target, JSON.stringify(res));
       };
-      httpPost(options);
+      sendHttpRequest(options);
     }
-  }
-}
+  };
 
-/**
- * 发送post请求
- * @param url
- * @param data
- * @param fn
- */
- function httpPost (options){
+  /**
+   * 发送http请求
+   * @param options ajax请求参数
+   */
+  function sendHttpRequest(options) {
 
-   let defaults={
-     success:function(data){
-       console.log(data);
-     },
-     error:null,
-     async:true
-   };
-   defaults=extend(defaults,options);
+    let defaults = {
+      url: null,
+      type: "POST",
+      async: true,
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (args) {
+        console.error(args);
+      }
+    };
+    defaults = extend(defaults, options);
 
-  if(!XMLHttpRequest){
-    console.error("当前浏览器版本过低,不支持XMLHttpRequest!");
-  }
+    if (!XMLHttpRequest) {
+      console.error("当前浏览器版本过低,不支持XMLHttpRequest!");
+    }
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
+    xhr.open(defaults.type, defaults.url, defaults.async);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && (xhr.status === 200 || xhr.status === 304)) {
-        fn.call(this, xhr.responseText);
-      }else{
-
+        defaults.success().call(this, xhr.responseText);
+      } else {
+        defaults.error(arguments);
       }
     };
     xhr.send(data);
-}
-
-window.$cacher = new Cacher();
-
-export {Cacher};
-
-/**
- *
- * @param obj
- * @param obj2
- * @returns {*}
- */
-function extend(obj,obj2){
-  if(typeof obj2 ==='object') {
-    for (let key in obj2) {
-      obj[key] = obj2[key];
-    }
   }
-  return obj;
+
+  /**
+   *  合并数据对象
+   * @param obj
+   * @param obj2
+   * @returns {*}
+   */
+  function extend(obj, obj2) {
+    if (typeof obj2 === 'object') {
+      for (let key in obj2) {
+        obj[key] = obj2[key];
+      }
+    }
+    return obj;
+  }
 }
+
+let cacher = new Cacher();
+window.$cacher = cacher;
+
+export {cacher} ;
+
+
