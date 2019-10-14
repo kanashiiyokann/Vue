@@ -62,7 +62,7 @@ function Cacher() {
         defaults.error(arguments);
       }
     };
-    xhr.send(data);
+    xhr.send(defaults.data);
   }
 
   /**

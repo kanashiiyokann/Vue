@@ -24,8 +24,7 @@
         <el-form-item label="记账状态">
           <el-select v-model="params.accounted">
             <el-option value="" label="全部"></el-option>
-            <el-option v-for="accountedState in accountedStateList" :key="accountedState.value"
-                       :value="accountedState.value" :label="accountedState.text"></el-option>
+            <el-option v-for="accountedState in accountedStateList" :key="accountedState.value"   :value="accountedState.value" :label="accountedState.text"></el-option>
           </el-select>
         </el-form-item>
         <el-button type="primary" size="small" @click="doSearch">查询</el-button>
